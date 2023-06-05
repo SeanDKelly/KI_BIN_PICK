@@ -19,4 +19,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Solidworks_API\sldworks.tlb">
+      <Filter>Quelldateien</Filter>
+    </None>
+    <None Include="..\Solidworks_API\swconst.tlb">
+      <Filter>Quelldateien</Filter>
+    </None>
+  </ItemGroup>
 </Project>
