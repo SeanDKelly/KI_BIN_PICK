@@ -1,42 +1,57 @@
+#include <iostream>
 #include <atlbase.h>
-
-#import "sldworks.tlb" raw_interfaces_only, raw_native_types, no_namespace, named_guids  // SOLIDWORKS type library
-
-#import "swconst.tlb" raw_interfaces_only, raw_native_types, no_namespace, named_guids   // SOLIDWORKS constants type library
+#import "sldworks.tlb" raw_interfaces_only
 
 int main()
 {
-	// Initialize COM
-	// Do this before using ATL smart pointers so COM is available.
-	CoInitialize(NULL);
+    // Initialisierung der COM-Bibliothek
+    CoInitialize(NULL);
 
-	// Use a block, so the smart pointers are destructed when the scope of this block is left
-	{
-		// COM Pointer of Soldiworks object
-		CComPtr<ISldWorks> swApp;
+    // SolidWorks-Anwendung erstellen
+    SldWorks::ISldWorksPtr swApp;
+    HRESULT hr = swApp.CreateInstance(__uuidof(SldWorks::SldWorks));
+    if (FAILED(hr))
+    {
+        std::cout << "Fehler beim Erstellen der SolidWorks-Anwendung!" << std::endl;
+        CoUninitialize();
+        return -1;
+    }
+   
+    // SolidWorks-Datei öffnen
 
-		// Create an instance of Solidworks application
-		// If it fails then return 0 and close program
-		if (swApp.CoCreateInstance(__uuidof(SldWorks), NULL, CLSCTX_LOCAL_SERVER) != S_OK)
-		{
-			// Stop COM 
-			CoUninitialize();
-			return(0);
-		}
 
-		// If created successfully, then visible the Solidworks
-		swApp->put_Visible(VARIANT_TRUE);
+    // COM Pointer of Soldiworks Model Document
+    CComPtr<SldWorks::IModelDoc2> model;
+    VARIANT_BOOL status = VARIANT_FALSE;
+    BSTR dateiPfad = SysAllocString(L"C:\Users\theja\Downloads\Greifer.SLDPRT");
+    BSTR config = SysAllocString(L"");
 
-		// COM Style String for message to user
-		CComBSTR _messageToUser(L"Hello World!!! I am from Solidworks C++ API.");
+    swApp->OpenDoc6(
+        dateiPfad, // Pfad zur SolidWorks-Datei
+        1,      // Dateityp: 1 für Teil, 2 für Baugruppe, usw.
+        1,      // Optionen: 1 für Aktualisieren des Ansichtsbereichs, 0 für Standardoptionen
+        config, // Keine spezifische Konfiguration
+        0,   // Keine Fehler-Rückgabe
+        0,   // Keine Warnungen-Rückgabe
+        &model
+    );
+        
 
-		// long type variable to store the result value by user
-		long _lMessageResult;
+    if (model != NULL) {
+        std::wcout << "Erfolgreich geoeffnet" << std::endl;
+    }
 
-		// Send a message to user and store the return value in _lMessageResult by referencing it
-		swApp->SendMsgToUser2(_messageToUser, swMessageBoxIcon_e::swMbInformation, swMessageBoxBtn_e::swMbOk, &_lMessageResult);
-	}
+    else {
+        std::wcout << "Fehler beim oeffnen" << std::endl;
+    }
 
-	// Stop COM 
-	CoUninitialize();
+    
+
+    // Beenden der SolidWorks-Anwendung
+    swApp->ExitApp();
+
+    // Bereinigung der COM-Bibliothek
+    CoUninitialize();
+
+    return 0;
 }
