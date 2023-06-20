@@ -133,8 +133,6 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Solidworks_API\sldworks.tlb" />
-    <None Include="..\Solidworks_API\swconst.tlb" />
     <None Include="Anleitung.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
